@@ -16,3 +16,10 @@ jobs:
 
             - name: Install poetry
               run: pip install poetry
+
+
+            - name: Install dependencies
+              run: poetry install --without doc
+
+            - name: Run tests
+              run: poetry run task test
