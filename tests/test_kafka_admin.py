@@ -1,24 +1,24 @@
 import subprocess
 import time
 from pytest import fixture, mark
-from kafka.errors import NoBrokersAvailable
 from dadaia_tools.kafka_admin import KafkaAdminAPI
 import pytest
 import faker
 
 fake = faker.Faker()
 
-# @pytest.fixture(scope='session', autouse=True)
-# def setup_and_teardown_session():
-#     # Run zookeeper in docker
-#     subprocess.run(['docker', 'run', '-d', '--rm', '-p', '2181:2181', '--name', 'zookeeper_test', 'zookeeper:latest'])
-#     # Run kafka in docker
-#     time.sleep(5)
-#     subprocess.run(['docker', 'run', '-d', '--rm', '-p', '9092:9092', '--name', 'kafka_test', '--link', 'zookeeper_test:zookeeper', '-e', 'KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181', '-e', 'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092', '-e', 'KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1', 'confluentinc/cp-kafka:latest'])
-#     time.sleep(10)
-#     yield
-#     subprocess.Popen(['docker', 'stop', 'kafka_test'])
-#     subprocess.Popen(['docker', 'stop', 'zookeeper_test'])
+@pytest.fixture(scope='session', autouse=True)
+def setup_and_teardown_session():
+    # Run zookeeper in docker
+    subprocess.run(['docker', 'run', '-d', '--rm', '-p', '2181:2181', '--name', 'zookeeper_test', 'zookeeper:latest'])
+    # Run kafka in docker
+    time.sleep(3)
+    subprocess.run(['docker', 'run', '-d', '--rm', '-p', '9092:9092', '--name', 'kafka_test', '--link', 'zookeeper_test:zookeeper', '-e', 'KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181', '-e', 'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092', '-e', 'KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1', 'confluentinc/cp-kafka:latest'])
+    time.sleep(10)
+    yield
+    subprocess.Popen(['docker', 'stop', 'kafka_test'])
+    subprocess.Popen(['docker', 'stop', 'zookeeper_test'])
+    time.sleep(5)
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -109,10 +109,7 @@ def test_quando_cria_topico_que_existe_e_overwrite_entao_sobrescreve(get_kafka):
         ('flush.messages', '1000'),
         ('flush.ms', '1000'),
         ('cleanup.policy', 'compact'),
-
-    ],
-
-)
+    ])
 def test_quando_cria_topico_com_configuracoes_especiais_entao_cria_topico_com_configuracoes_especiais(config_name, config_value, get_kafka):
     topic = fake.name().split()[0]
     topic_config = {config_name: config_value}
