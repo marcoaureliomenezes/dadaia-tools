@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 redis = "^5.0.0"
+kafka-python = "^2.0.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -22,6 +23,7 @@ taskipy = "^1.12.0"
 mkdocstrings = "^0.23.0"
 mkdocstrings-python = "^1.7.0"
 mkdocs-material = "^9.3.1"
+pymdown-extensions = "^10.3"
 
 [build-system]
 requires = ["poetry-core"]
@@ -38,6 +40,10 @@ markers = [
     "constructor: constructor",
     "parametrizado: parametrizado",
     "last_tests: last_tests",
+    "kafka_admin: kafka_admin",
+    "kafka_client: kafka_client",
+    "insert_key_overwrite: insert_key_overwrite",
+    "redis_client: redis_client",
 ]
 
 [tool.isort]

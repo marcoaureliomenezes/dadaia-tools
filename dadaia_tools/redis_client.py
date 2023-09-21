@@ -4,7 +4,6 @@ import redis
 
 
 class RedisAPI:
-
     def __init__(self, host: str, port: int):
         """
         Construtor da classe
@@ -14,8 +13,9 @@ class RedisAPI:
         self.redis = redis.Redis(host=host, port=port, decode_responses=True)
         self.redis.keys()
 
-
-    def insert_key_obj(self, key: str, value: object, overwrite: bool = True) -> None:
+    def insert_key_obj(
+        self, key: str, value: object, overwrite: bool = True
+    ) -> None:
         """
         Insere uma chave no redis
         :param key: chave a ser inserida
@@ -29,17 +29,14 @@ class RedisAPI:
         else:
             print(f'Key {key} already exists')
 
-
     def get_key_obj(self, key, default=[]) -> object:
         data = self.redis.get(key)
         if data is None:
             return default
         return json.loads(data)
 
-
     def delete_key(self, key) -> None:
         self.redis.delete(key)
-
 
     def clear_keys(self) -> None:
         self.redis.flushall()
