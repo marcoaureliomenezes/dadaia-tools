@@ -11,6 +11,25 @@ theme:
 
 markdown_extensions:
   - attr_list
+  - pymdownx.tasklist
+  - pymdownx.emoji
+  - pymdownx.tilde
+  - pymdownx.mark
+  - pymdownx.highlight
+  - pymdownx.superfences
 
 extra_css:
   - stylesheets/extra.css
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [redis_client]
+
+nav:
+  - Início: ./index.md
+  - Como usar: ./APIs/how_to_use.md
+  - Kafka Client: ./APIs/kafka_client.md
+  - Redis Client: ./APIs/redis_client.md
+  - Kafka Admin: ./APIs/kafka_admin.md
