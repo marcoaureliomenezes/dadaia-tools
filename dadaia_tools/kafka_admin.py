@@ -1,8 +1,4 @@
-import asyncio
-import json
 import time
-from abc import ABC, abstractmethod
-from dadaia_tools.singleton import SingletonMeta
 
 from kafka.admin import (
     ConfigResource,
@@ -12,17 +8,13 @@ from kafka.admin import (
 )
 from kafka.errors import TopicAlreadyExistsError
 
-
-
+from dadaia_tools.singleton import SingletonMeta
 
 
 class KafkaAdminAPI(metaclass=SingletonMeta):
-
-
     def __init__(self, connection_str):
         self.connection_str = connection_str
         self.admin = KafkaAdminClient(bootstrap_servers=self.connection_str)
-
 
     def create_idempotent_topic(
         self,
@@ -47,11 +39,11 @@ class KafkaAdminAPI(metaclass=SingletonMeta):
                 time.sleep(1)
                 self.admin.delete_topics([topic_name])
                 time.sleep(2)
-                self.admin.create_topics(new_topics=[topic], validate_only=False)
+                self.admin.create_topics(
+                    new_topics=[topic], validate_only=False
+                )
                 return self
             return self
-  
-
 
     def update_topic(self, topic, configs):
         cfg_resource_update = ConfigResource(
@@ -70,23 +62,18 @@ class KafkaAdminAPI(metaclass=SingletonMeta):
             topics = [topic for topic in topics if not topic.startswith('_')]
         topics = sorted(topics)
         return topics
-    
-    
+
     def describe_topic(self, topic):
         return self.admin.describe_topics([topic])[0]
-
-    # See the retention time of a topic
 
     def get_topic_config(self, topic):
         cfg_resource = ConfigResource(ConfigResourceType.TOPIC, topic)
         return self.admin.describe_configs([cfg_resource])[0]
 
-
     def clear_topics(self):
         topics = self.list_topics()
         self.admin.delete_topics(topics)
         return self
-    
 
     def get_topic_by_name(self, topic_name):
         return self.admin.describe_topics([topic_name])

@@ -1,28 +1,27 @@
 import json
 from typing import Any
 
-from kafka import KafkaConsumer, KafkaProducer, TopicPartition, OffsetAndMetadata
+from kafka import (
+    KafkaConsumer,
+    KafkaProducer
+)
+
 from dadaia_tools.singleton import SingletonMeta
 
 
 class SuccessHandler:
-
     def __call__(self, data) -> Any:
-        print(f"Data {data} sent to Kafka")
+        print(f'Data {data} sent to Kafka')
 
 
 class ErrorHandler:
-
     def __call__(self, error) -> Any:
-        print(f"Error {error} sending data to Kafka")
+        print(f'Error {error} sending data to Kafka')
 
 
 class KafkaClient(metaclass=SingletonMeta):
-
-
     def __init__(self, connection_str):
         self.connection_str = connection_str
-        
 
     def is_connected(self):
         producer = self.create_producer()
@@ -38,19 +37,15 @@ class KafkaClient(metaclass=SingletonMeta):
             **configs,
         )
         return producer
-    
 
     def get_producer_config(self, producer):
         return producer.config
 
-
     def __key_deserializer(self, key):
         return key.decode('utf-8')
-    
 
     def __value_deserializer(self, value):
         return json.loads(value.decode('utf-8'))
-    
 
     def create_consumer(self, consumer_group, **configs):
         consumer = KafkaConsumer(
@@ -61,7 +56,6 @@ class KafkaClient(metaclass=SingletonMeta):
             **configs,
         )
         return consumer
-    
 
     def get_consumer_config(self, consumer):
         return consumer.config
@@ -75,8 +69,7 @@ class KafkaClient(metaclass=SingletonMeta):
         )
         producer.flush()
 
-
     def consume_data(self, consumer, topic):
         consumer.subscribe([topic])
         for message in consumer:
-            yield message.value    
+            yield message.value

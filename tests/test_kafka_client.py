@@ -1,15 +1,63 @@
 import subprocess
 import time
-from dadaia_tools.kafka_client import KafkaClient
+from threading import Thread
+
+import pytest
 from kafka.errors import NoBrokersAvailable
 from pytest import fixture, mark
-import pytest
-from threading import Thread
+
+from dadaia_tools.kafka_client import KafkaClient
+
+
+@pytest.fixture(scope='session', autouse=True)
+def setup_and_teardown_session():
+    # Run zookeeper in docker
+    subprocess.run(
+        [
+            'docker',
+            'run',
+            '-d',
+            '--rm',
+            '-p',
+            '2181:2181',
+            '--name',
+            'zookeeper_test',
+            'zookeeper:latest',
+        ]
+    )
+    # Run kafka in docker
+    time.sleep(3)
+    subprocess.run(
+        [
+            'docker',
+            'run',
+            '-d',
+            '--rm',
+            '-p',
+            '9092:9092',
+            '--name',
+            'kafka_test',
+            '--link',
+            'zookeeper_test:zookeeper',
+            '-e',
+            'KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181',
+            '-e',
+            'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092',
+            '-e',
+            'KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1',
+            'confluentinc/cp-kafka:latest',
+        ]
+    )
+    time.sleep(10)
+    yield
+    subprocess.Popen(['docker', 'stop', 'kafka_test'])
+    subprocess.Popen(['docker', 'stop', 'zookeeper_test'])
+    time.sleep(5)
 
 
 @fixture(scope='function')
 def get_kafka():
-    conn_str = "localhost:9092"
+    conn_str = 'localhost:9092'
     kafka_client = KafkaClient(connection_str=conn_str)
     yield kafka_client
     del KafkaClient._instances[KafkaClient]
@@ -18,15 +66,15 @@ def get_kafka():
 # Method that runs a subprocess to send data to kafka
 @fixture(scope='function')
 def subprocess_send_data_in_background():
-    topic_name = "test_topic"
+    topic_name = 'test_topic'
     size = 2
-    cmd = f"python3 tests/send_data_to_kafka.py {topic_name} {size}"
+    cmd = f'python3 tests/send_data_to_kafka.py {topic_name} {size}'
     subprocess.Popen(cmd, shell=True)
 
 
 @mark.kafka_client
 def test_quando_kafka_service_existe_entao_conecta():
-    conn_str = "localhost:9092"
+    conn_str = 'localhost:9092'
     kafka_client = KafkaClient(connection_str=conn_str)
     result = type(kafka_client)
     expected = KafkaClient
@@ -36,7 +84,7 @@ def test_quando_kafka_service_existe_entao_conecta():
 
 @mark.kafka_client
 def test_quando_cria_kafka_client_obj_inexistente_retorna_no_brokers_available():
-    conn_str = "localhost:9095"
+    conn_str = 'localhost:9095'
     kafka_client = KafkaClient(connection_str=conn_str)
     with pytest.raises(NoBrokersAvailable):
         kafka_client.is_connected()
@@ -64,16 +112,20 @@ def test_quando_cria_kafka_client_obj_e_singleton(get_kafka):
         ('acks', 'All'),
         ('buffer_memory', 100000),
         ('connections_max_idle_ms', 1000),
-    ])
+    ],
+)
 @mark.kafka_client
-def test_quando_cria_producer_entao_e_producer(config_name, config_value, get_kafka):
+def test_quando_cria_producer_entao_e_producer(
+    config_name, config_value, get_kafka
+):
     property = {config_name: config_value}
     producer = get_kafka.create_producer(**property)
     producer_config = get_kafka.get_producer_config(producer)
     expected = producer_config[config_name]
     assert expected == config_value
-    #expected = KafkaProducer
-    #assert expected == result
+    # expected = KafkaProducer
+    # assert expected == result
+
 
 @mark.parametrize(
     'config_name,config_value',
@@ -83,30 +135,35 @@ def test_quando_cria_producer_entao_e_producer(config_name, config_value, get_ka
         ('fetch_max_wait_ms', 1000),
         ('fetch_min_bytes', 100),
         ('enable_auto_commit', True),
-
-    ]
+    ],
 )
 @mark.kafka_client
-def test_quando_cria_consumer_entao_e_consumer(config_name, config_value, get_kafka):
-    consumer_group = "test_group"
+def test_quando_cria_consumer_entao_e_consumer(
+    config_name, config_value, get_kafka
+):
+    consumer_group = 'test_group'
     property = {config_name: config_value}
     consumer = get_kafka.create_consumer(consumer_group, **property)
     consumer_config = consumer.config
     expected = consumer_config[config_name]
     assert expected == config_value
 
-@mark.last_tests
+
 @mark.kafka_client
-def test_quando_producer_envia_consumer_recebe(get_kafka, subprocess_send_data_in_background):
+def test_quando_producer_envia_consumer_recebe(
+    get_kafka, subprocess_send_data_in_background
+):
     size = 100
-    topic_name = "test_topic"
-    consumer_group = "test_group"
-    consumer = get_kafka.create_consumer(consumer_group, auto_offset_reset='earliest')
+    topic_name = 'test_topic'
+    consumer_group = 'test_group'
+    consumer = get_kafka.create_consumer(
+        consumer_group, auto_offset_reset='earliest'
+    )
     consumer.subscribe(topic_name)
     # consume data
     for step in range(size):
         msg = next(consumer)
-        #print(f"Received {step} messages")
+        # print(f"Received {step} messages")
         print(msg.value)
-        expected = f"value_{step}"
-        #assert expected == msg.value.decode('utf-8')
+        expected = f'value_{step}'
+        # assert expected == msg.value.decode('utf-8')
