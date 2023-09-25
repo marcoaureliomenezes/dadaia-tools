@@ -39,7 +39,6 @@ def get_redis():
 
 
 @mark.redis_client
-@mark.constructor
 def test_quando_redis_service_existe_entao_conecta():
     entrada_1, entrada_2 = 'localhost', 36379
     redis_client = RedisAPI(host=entrada_1, port=entrada_2)
@@ -49,7 +48,6 @@ def test_quando_redis_service_existe_entao_conecta():
 
 
 @mark.redis_client
-@mark.constructor
 def test_quando_redis_service_nao_existe_entao_retorna_erro(get_redis):
     entrada_1, entrada_2 = 'localhost', 36378
     with raises(ConnectionError):
@@ -57,7 +55,6 @@ def test_quando_redis_service_nao_existe_entao_retorna_erro(get_redis):
 
 
 @mark.redis_client
-@mark.get_key_obj
 def test_quando_nenhuma_chave_existe_entao_get_key_obj_padrao_retorna_lista_vazia(
     get_redis,
 ):
@@ -68,7 +65,6 @@ def test_quando_nenhuma_chave_existe_entao_get_key_obj_padrao_retorna_lista_vazi
 
 
 @mark.redis_client
-@mark.get_key_obj
 @mark.parametrize(
     'esperado', [{}, [], (), 'string', 1, 1.0, True, False, None]
 )
@@ -82,7 +78,6 @@ def test_quando_nao_existe_chave_entao_get_key_obj_dict_retorna_default(
 
 
 @mark.redis_client
-@mark.get_key_obj
 @mark.parametrize(
     'entrada,esperado',
     [
@@ -106,7 +101,7 @@ def test_quando_insere_uma_chave_obj_entao_chave_e_obj_sao_armazenados(
     assert expected == result
 
 
-@mark.insert_key_overwrite
+@mark.redis_client
 def test_quando_insere_uma_chave_obj_que_ja_existe_entao_chave_e_obj_sao_sobrescritos(
     get_redis,
 ):
@@ -120,8 +115,7 @@ def test_quando_insere_uma_chave_obj_que_ja_existe_entao_chave_e_obj_sao_sobresc
     assert expected == result
 
 
-
-@mark.insert_key_overwrite
+@mark.redis_client
 def test_quando_insere_uma_chave_obj_que_ja_existe_com_parm_overwrite_false_entao_chave_e_obj_nao_sao_sobrescritos(
     get_redis,
 ):
