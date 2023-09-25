@@ -34,16 +34,15 @@ build-backend = "poetry.core.masonry.api"
 pythonpath = "."
 addopts = "--doctest-modules"
 markers = [
-    "insert_key_obj_get_key_obj: insert_key_obj_get_key_obj",
-    "get_key_obj: get_key_obj",
-    "insert_key_obj: insert_key_obj",
-    "constructor: constructor",
-    "parametrizado: parametrizado",
-    "last_tests: last_tests",
+    "a_verificar: a_verificar",
+    "redis_client: redis_client",
     "kafka_admin: kafka_admin",
     "kafka_client: kafka_client",
-    "insert_key_overwrite: insert_key_overwrite",
-    "redis_client: redis_client",
+    "blob_admin: blob_admin",
+    "blob_client: blob_client",
+    "key_vault_client: key_vault_client",
+    "table_client: table_client",
+    "latest: latest",
 ]
 
 [tool.isort]
