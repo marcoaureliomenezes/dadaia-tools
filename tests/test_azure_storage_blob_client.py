@@ -53,7 +53,7 @@ def efemeral_container(blob_admin, gen_container_name):
 @pytest.fixture(scope='function')
 def local_json():
     data = [{'nome': 'joao', 'idade': 30}, {'nome': 'maria', 'idade': 25}]
-    path = f'tests/files/test-{str(random.randint(0,9999)).zfill(4)}.json'
+    path = f'/tmp/test-{str(random.randint(0,9999)).zfill(4)}.json'
     with open(path, 'w') as file:
         json.dump(data, file)
     yield path
@@ -62,7 +62,7 @@ def local_json():
 
 @pytest.fixture(scope='function')
 def path_downloaded_file():
-    path = f'tests/files/test-{str(random.randint(0,9999)).zfill(4)}.json'
+    path = f'/tmp/test-{str(random.randint(0,9999)).zfill(4)}.json'
     yield path
     os.remove(path)
 
@@ -70,7 +70,7 @@ def path_downloaded_file():
 ########################################  TESTS  ########################################
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_blob_client_api():
     load_dotenv()
     storage_account = os.getenv('STORAGE_ACCOUNT_NAME')
@@ -81,33 +81,29 @@ def test_blob_client_api():
     assert type(blob_client) == BlobClientApi
 
 
-@mark.blob_client
-def test_quando_tenho_blob_admin_e_blob_client_entao_admin_herda_client(
-    blob_admin,
-):
+@pytest.mark.blob_client
+def test_quando_tenho_blob_admin_e_blob_client_entao_admin_herda_client(blob_admin):
     assert isinstance(blob_admin, BlobClientApi)
 
 
-@mark.blob_client
-def test_quando_tenho_blob_admin_e_blob_client_entao_client_nao_herda_admin(
-    blob_client,
-):
+@pytest.mark.blob_client
+def test_quando_tenho_blob_admin_e_blob_client_entao_client_nao_herda_admin(blob_client):
     assert not isinstance(blob_client, BlobAdminApi)
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_quando_tenho_blob_client_nao_consigo_criar_containers(blob_client):
     with pytest.raises(AttributeError):
         blob_client.create_container(container_name='test')
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_quando_tenho_blob_client_nao_consigo_deletar_containers(blob_client):
     with pytest.raises(AttributeError):
         blob_client.delete_container(container_name='test')
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_quando_cria_container_entao_client_lista_container_vazio(
     blob_client, efemeral_container
 ):
@@ -115,10 +111,8 @@ def test_quando_cria_container_entao_client_lista_container_vazio(
     assert result == []
 
 
-@mark.blob_client
-def test_quando_faz_upload_de_blob_entao_blob_e_listado(
-    blob_client, efemeral_container, local_json
-):
+@pytest.mark.blob_client
+def test_quando_faz_upload_de_blob_entao_blob_e_listado(blob_client, efemeral_container, local_json):
     blobs_before = blob_client.list_blobs(container_name=efemeral_container)
     blob_client.upload_blob(
         container_name=efemeral_container,
@@ -129,7 +123,7 @@ def test_quando_faz_upload_de_blob_entao_blob_e_listado(
     assert local_json not in blobs_before and local_json in blobs_after
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_quando_existe_blob_e_este_e_deletado_entao_nao_e_mais_listado(
     blob_client, efemeral_container, local_json
 ):
@@ -146,7 +140,7 @@ def test_quando_existe_blob_e_este_e_deletado_entao_nao_e_mais_listado(
     assert local_json in blobs_before and local_json not in blobs_after
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_quando_download_de_blob_e_feito_entao_arquivo_e_efetivamente_baixado(
     blob_client, efemeral_container, local_json, path_downloaded_file
 ):
@@ -163,7 +157,7 @@ def test_quando_download_de_blob_e_feito_entao_arquivo_e_efetivamente_baixado(
     assert os.path.exists(path_downloaded_file)
 
 
-@mark.blob_client
+@pytest.mark.blob_client
 def test_quando_upload_e_download_posterior_de_blob_e_feito_entao_arquivo_se_mantem_consistente(
     blob_client, efemeral_container, local_json, path_downloaded_file
 ):
