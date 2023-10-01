@@ -62,7 +62,7 @@ def local_json():
 
 @pytest.fixture(scope='function')
 def path_downloaded_file():
-    path = f'tmp/test-{str(random.randint(0,9999)).zfill(4)}.json'
+    path = f'/tmp/test-{str(random.randint(0,9999)).zfill(4)}.json'
     yield path
     os.remove(path)
 
