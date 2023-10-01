@@ -1,6 +1,10 @@
 name: Pipeline
 
-on: [push]
+on:
+    push:
+        branches: [develop]
+    pull_request:
+        branches: [main]
 
 jobs:
     test:
@@ -20,6 +24,10 @@ jobs:
 
             - name: Install dependencies
               run: poetry install --without doc
+
+            - name: Install docker
+              uses: docker/setup-buildx-action@v1
+              
 
             - name: Run tests
               run: poetry run task test --cov-report=xml

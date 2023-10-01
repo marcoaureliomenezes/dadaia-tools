@@ -9,6 +9,10 @@ readme = "README.md"
 python = "^3.10"
 redis = "^5.0.0"
 kafka-python = "^2.0.2"
+azure-data-tables = "^12.4.4"
+azure-keyvault-secrets = "^4.7.0"
+azure-storage-blob = "^12.18.2"
+boto3 = "^1.28.57"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -42,6 +46,8 @@ markers = [
     "blob_client: blob_client",
     "key_vault_client: key_vault_client",
     "table_client: table_client",
+    "queue_client: queue_client",
+    "etherscan_client: etherscan_client",
     "latest: latest",
 ]
 
@@ -50,8 +56,6 @@ profile = "black"
 line_length = 79
 
 [tool.taskipy.tasks]
-lint = "blue --check --diff . && isort --check --diff ."
 docs = "mkdocs serve"
-pre_test = "task lint"
-test = "pytest -s -x --cov=dadaia_tools -vv"
+test = "pytest --cov=dadaia_tools -vv"
 post_test = "coverage html && firefox htmlcov/index.html"
