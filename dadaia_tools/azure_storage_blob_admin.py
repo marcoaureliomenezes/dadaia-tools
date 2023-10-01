@@ -19,9 +19,7 @@ class BlobAdminApi(BlobClientApi):
         return container_client
 
     def delete_container(self, container_name):
-        container_client = self.blob_service_client.get_container_client(
-            container_name
-        )
+        container_client = self.blob_service_client.get_container_client(container_name)
         print(f'Deleting container {container_name}')
         self.blob_service_client.delete_container(container_name)
         return container_client

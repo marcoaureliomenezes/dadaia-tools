@@ -50,8 +50,8 @@ jobs:
 
             - name: Config git
               run: |
-                git config user.name "marco menezes"
-                git config user.email "marcoaurelioreislima@gmail.com"
+                git config user.name --local "marco menezes"
+                git config user.email --local "marcoaurelioreislima@gmail.com"
                 git checkout main
                 git merge develop
                 git push origin main
