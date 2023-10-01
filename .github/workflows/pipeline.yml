@@ -48,10 +48,9 @@ jobs:
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
 
-            - name: Config git
-              run: |
-                git config user.name --local "marco menezes"
-                git config user.email --local "marcoaurelioreislima@gmail.com"
-                git checkout main
-                git merge develop
-                git push origin main
+            - name: Merge staging -> main
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: main
+                github_token: ${{ secrets.GITHUB_TOKEN }}
