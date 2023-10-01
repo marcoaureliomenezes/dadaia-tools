@@ -14,6 +14,7 @@ azure-keyvault-secrets = "^4.7.0"
 azure-storage-blob = "^12.18.2"
 boto3 = "^1.28.57"
 azure-identity = "^1.14.0"
+azure-storage-queue = "^12.7.2"
 
 
 [tool.poetry.group.dev.dependencies]
