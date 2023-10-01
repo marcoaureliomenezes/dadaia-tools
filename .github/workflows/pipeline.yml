@@ -48,6 +48,6 @@ jobs:
 
             - name: Merge Develop para Main
               run: |
-                git checkout main
+                git checkout -b main
                 git merge develop --no-edit
                 git push origin main
