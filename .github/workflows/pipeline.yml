@@ -46,11 +46,11 @@ jobs:
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
 
-            - name: Merge Develop para Main
-              run: |
-                git checkout -b main
-                git merge develop --no-edit
-                git push origin main
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                
+            - uses: actions/checkout@v2
+            - uses: everlytic/branch-merge@1.1.2
+              with:
+                github_token: ${{ github.token }}
+                source_ref: develop
+                target_branch: 'main'
+                commit_message_template: '[Automated] Merged develop into target {target_branch}'
+
