@@ -54,3 +54,9 @@ jobs:
                 target_branch: 'main'
                 commit_message_template: '[Automated] Merged develop into target {target_branch}'
 
+            - name: Publicação no PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                user: ${{ secrets.PYPI_USERS }}
+                password: ${{ secrets.PYPI_PASSWORD }}
+
