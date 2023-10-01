@@ -32,12 +32,7 @@ jobs:
 
             - name: Install docker
               uses: docker/setup-buildx-action@v1
-
-            - name: Setup environment variables
-              run: 
-
-              
-
+       
             - name: Run tests
               env:
                   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
