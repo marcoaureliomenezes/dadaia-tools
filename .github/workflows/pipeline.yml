@@ -46,9 +46,8 @@ jobs:
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
 
-            - name: Merge staging -> main
-              uses: devmasx/merge-branch@master
-              with:
-                type: now
-                target_branch: main
-                github_token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Merge Develop para Main
+              run: |
+                git checkout main
+                git merge develop --no-edit
+                git push origin main
