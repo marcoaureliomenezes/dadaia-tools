@@ -7,7 +7,6 @@ on:
         branches: [main]
 
 
-
 jobs:
     deploy_dadaia_tools:
         runs-on: self-hosted
@@ -16,10 +15,12 @@ jobs:
             - name: Git Checkout
               uses: actions/checkout@v2
             
+
             - name: Install Python
               uses: actions/setup-python@v2
               with:
                   python-version: '3.10'
+
 
             - name: Install Poetry
               run: pip install poetry
@@ -28,9 +29,11 @@ jobs:
             - name: Install Package Dependencies
               run: poetry install --without doc
 
+
             - name: Install Docker for testing
               uses: docker/setup-buildx-action@v1
        
+
             - name: Run Package Tests
               env:
                   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -41,10 +44,12 @@ jobs:
                   STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
               run: poetry run task test --cov-report=xml
 
+
             - name: Upload Test Coverage
               uses: codecov/codecov-action@v3
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
+
 
             - uses: actions/checkout@v2
             - uses: everlytic/branch-merge@1.1.2
@@ -53,6 +58,11 @@ jobs:
                 source_ref: develop
                 target_branch: 'main'
                 commit_message_template: '[Automated] Merged develop into target {target_branch}'
+
+
+            - name: Build Python Package
+              run: poetry build
+
 
             - name: Publicação no PyPI
               uses: pypa/gh-action-pypi-publish@release/v1
