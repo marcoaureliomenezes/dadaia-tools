@@ -48,12 +48,10 @@ jobs:
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
 
-
-            - name: Merge Develop to Main
+            - name: Config git
               run: |
-                git config user.name "GitHub Actions"
-                git config user.email "actions@github.com"
-                
+                git config user.name "marco menezes"
+                git config user.email "marcoaurelioreislima@gmail.com"
                 git checkout main
                 git merge develop
                 git push origin main
