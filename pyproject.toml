@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "dadaia-tools"
-version = "0.1.1"
+version = "0.1.2"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 redis = "^5.0.0"
 kafka-python = "^2.0.2"
 azure-data-tables = "^12.4.4"
